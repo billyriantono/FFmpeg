@@ -460,18 +460,18 @@ typedef struct AVProbeData
 #define AVPROBE_PADDING_SIZE 32 ///< extra allocated bytes at the end of the probe buffer
 
 /// Demuxer will use avio_open, no opened file should be provided by the caller.
-#define AVFMT_NOFILE        0x0001
-#define AVFMT_NEEDNUMBER    0x0002 /**< Needs '%d' in filename. */
+#define AVFMT_NOFILE 0x0001
+#define AVFMT_NEEDNUMBER 0x0002 /**< Needs '%d' in filename. */
 /**
  * The muxer/demuxer is experimental and should be used with caution.
  *
  * - demuxers: will not be selected automatically by probing, must be specified
  *             explicitly.
  */
-#define AVFMT_EXPERIMENTAL  0x0004
-#define AVFMT_SHOW_IDS      0x0008 /**< Show format stream IDs numbers. */
-#define AVFMT_GLOBALHEADER  0x0040 /**< Format wants global header. */
-#define AVFMT_NOTIMESTAMPS  0x0080 /**< Format does not need / have any timestamps. */
+#define AVFMT_EXPERIMENTAL 0x0004
+#define AVFMT_SHOW_IDS 0x0008      /**< Show format stream IDs numbers. */
+#define AVFMT_GLOBALHEADER 0x0040  /**< Format wants global header. */
+#define AVFMT_NOTIMESTAMPS 0x0080  /**< Format does not need / have any timestamps. */
 #define AVFMT_GENERIC_INDEX 0x0100 /**< Use generic index building code. */
 #define AVFMT_TS_DISCONT 0x0200    /**< Format allows timestamp discontinuities. Note, muxers always require valid (monotone) timestamps */
 #define AVFMT_VARIABLE_FPS 0x0400  /**< Format allows variable fps. */
@@ -821,7 +821,7 @@ typedef struct AVIndexEntry
  * The stream should be chosen by default among other streams of the same type,
  * unless the user has explicitly specified otherwise.
  */
-#define AV_DISPOSITION_DEFAULT              (1 << 0)
+#define AV_DISPOSITION_DEFAULT (1 << 0)
 /**
  * The stream is not in original language.
  *
@@ -829,44 +829,44 @@ typedef struct AVIndexEntry
  *       one of them should be set in properly tagged streams.
  * @note This disposition may apply to any stream type, not just audio.
  */
-#define AV_DISPOSITION_DUB                  (1 << 1)
+#define AV_DISPOSITION_DUB (1 << 1)
 /**
  * The stream is in original language.
  *
  * @see the notes for AV_DISPOSITION_DUB
  */
-#define AV_DISPOSITION_ORIGINAL             (1 << 2)
+#define AV_DISPOSITION_ORIGINAL (1 << 2)
 /**
  * The stream is a commentary track.
  */
-#define AV_DISPOSITION_COMMENT              (1 << 3)
+#define AV_DISPOSITION_COMMENT (1 << 3)
 /**
  * The stream contains song lyrics.
  */
-#define AV_DISPOSITION_LYRICS               (1 << 4)
+#define AV_DISPOSITION_LYRICS (1 << 4)
 /**
  * The stream contains karaoke audio.
  */
-#define AV_DISPOSITION_KARAOKE              (1 << 5)
+#define AV_DISPOSITION_KARAOKE (1 << 5)
 
 /**
  * Track should be used during playback by default.
  * Useful for subtitle track that should be displayed
  * even when user did not explicitly ask for subtitles.
  */
-#define AV_DISPOSITION_FORCED               (1 << 6)
+#define AV_DISPOSITION_FORCED (1 << 6)
 /**
  * The stream is intended for hearing impaired audiences.
  */
-#define AV_DISPOSITION_HEARING_IMPAIRED     (1 << 7)
+#define AV_DISPOSITION_HEARING_IMPAIRED (1 << 7)
 /**
  * The stream is intended for visually impaired audiences.
  */
-#define AV_DISPOSITION_VISUAL_IMPAIRED      (1 << 8)
+#define AV_DISPOSITION_VISUAL_IMPAIRED (1 << 8)
 /**
  * The audio stream contains music and sound effects without voice.
  */
-#define AV_DISPOSITION_CLEAN_EFFECTS        (1 << 9)
+#define AV_DISPOSITION_CLEAN_EFFECTS (1 << 9)
 /**
  * The stream is stored in the file as an attached picture/"cover art" (e.g.
  * APIC frame in ID3v2). The first (usually only) packet associated with it
@@ -874,39 +874,39 @@ typedef struct AVIndexEntry
  * seeking takes place. It can also be accessed at any time in
  * AVStream.attached_pic.
  */
-#define AV_DISPOSITION_ATTACHED_PIC         (1 << 10)
+#define AV_DISPOSITION_ATTACHED_PIC (1 << 10)
 /**
  * The stream is sparse, and contains thumbnail images, often corresponding
  * to chapter markers. Only ever used with AV_DISPOSITION_ATTACHED_PIC.
  */
-#define AV_DISPOSITION_TIMED_THUMBNAILS     (1 << 11)
+#define AV_DISPOSITION_TIMED_THUMBNAILS (1 << 11)
 
 /**
  * The subtitle stream contains captions, providing a transcription and possibly
  * a translation of audio. Typically intended for hearing-impaired audiences.
  */
-#define AV_DISPOSITION_CAPTIONS             (1 << 16)
+#define AV_DISPOSITION_CAPTIONS (1 << 16)
 /**
  * The subtitle stream contains a textual description of the video content.
  * Typically intended for visually-impaired audiences or for the cases where the
  * video cannot be seen.
  */
-#define AV_DISPOSITION_DESCRIPTIONS         (1 << 17)
+#define AV_DISPOSITION_DESCRIPTIONS (1 << 17)
 /**
  * The subtitle stream contains time-aligned metadata that is not intended to be
  * directly presented to the user.
  */
-#define AV_DISPOSITION_METADATA             (1 << 18)
+#define AV_DISPOSITION_METADATA (1 << 18)
 /**
  * The audio stream is intended to be mixed with another stream before
  * presentation.
  * Corresponds to mix_type=0 in mpegts.
  */
-#define AV_DISPOSITION_DEPENDENT            (1 << 19)
+#define AV_DISPOSITION_DEPENDENT (1 << 19)
 /**
  * The video stream contains still images.
  */
-#define AV_DISPOSITION_STILL_IMAGE          (1 << 20)
+#define AV_DISPOSITION_STILL_IMAGE (1 << 20)
 
 /**
  * @return The AV_DISPOSITION_* flag corresponding to disp or a negative error
@@ -936,7 +936,8 @@ const char *av_disposition_to_string(int disposition);
  * version bump.
  * sizeof(AVStream) must not be used outside libav*.
  */
-typedef struct AVStream {
+typedef struct AVStream
+{
 #if FF_API_AVSTREAM_CLASS
     /**
      * A class for @ref avoptions. Set on stream creation.
@@ -944,7 +945,7 @@ typedef struct AVStream {
     const AVClass *av_class;
 #endif
 
-    int index;    /**< stream index in AVFormatContext */
+    int index; /**< stream index in AVFormatContext */
     /**
      * Format-specific stream ID.
      * decoding: set by libavformat
@@ -1532,12 +1533,14 @@ typedef struct AVFormatContext
     /**
      * Avoid negative timestamps during muxing.
      * Any value of the AVFMT_AVOID_NEG_TS_* constants.
-     * Note, this only works when using av_interleaved_write_frame. (interleave_packet_per_dts is in use)
+     * Note, this works better when using av_interleaved_write_frame().
      * - muxing: Set by user
      * - demuxing: unused
      */
     int avoid_negative_ts;
 #define AVFMT_AVOID_NEG_TS_AUTO -1             ///< Enabled when required by target format
+#define AVFMT_AVOID_NEG_TS_AUTO -1             ///< Enabled when required by target format
+#define AVFMT_AVOID_NEG_TS_DISABLED 0          ///< Do not shift timestamps even when they are negative.
 #define AVFMT_AVOID_NEG_TS_MAKE_NON_NEGATIVE 1 ///< Shift timestamps so they are non negative
 #define AVFMT_AVOID_NEG_TS_MAKE_ZERO 2         ///< Shift timestamps so that they start at 0
 

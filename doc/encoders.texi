@@ -3296,8 +3296,14 @@ to allow changing of frame type from P and B to I.
 @item @var{adaptive_b}
 This flag controls changing of frame type from B to P.
 
+@item @var{p_strategy}
+Enable P-pyramid: 0-default 1-simple 2-pyramid(bf need to be set to 0).
+
 @item @var{b_strategy}
 This option controls usage of B frames as reference.
+
+@item @var{dblk_idc}
+This option disable deblocking. It has value in range 0~2.
 
 @item @var{cavlc}
 If set, CAVLC is used; if unset, CABAC is used for encoding.
@@ -3388,6 +3394,15 @@ intra refresh cycle.
 @item @var{rdo}
 Enable rate distortion optimization.
 
+@item @var{max_frame_size}
+Maximum encoded frame size in bytes.
+
+@item @var{p_strategy}
+Enable P-pyramid: 0-default 1-simple 2-pyramid(bf need to be set to 0).
+
+@item @var{dblk_idc}
+This option disable deblocking. It has value in range 0~2.
+
 @item @var{idr_interval}
 Distance (in I-frames) between IDR frames.
 @table @samp
@@ -3411,12 +3426,15 @@ an internal session.
 Depth of look ahead in number frames, available when extbrc option is enabled.
 
 @item @var{profile}
+Set the encoding profile (scc requires libmfx >= 1.32).
+
 @table @samp
 @item unknown
 @item main
 @item main10
 @item mainsp
 @item rext
+@item scc
 @end table
 
 @item @var{gpb}
@@ -3432,6 +3450,13 @@ Number of rows for tiled encoding.
 
 @item @var{aud}
 Insert the Access Unit Delimiter NAL.
+
+@item @var{pic_timing_sei}
+Insert picture timing SEI with pic_struct_syntax element.
+
+@item @var{transform_skip}
+Turn this option ON to enable transformskip. It is supported on platform equal
+or newer than ICL.
 @end table
 
 @subsection MPEG2 Options
