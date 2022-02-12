@@ -74,7 +74,6 @@ typedef struct HTTPContext
     uint64_t off, end_off, filesize;
     char *uri;
     char *location;
-    int cache_redirect;
     HTTPAuthState auth_state;
     HTTPAuthState proxy_auth_state;
     char *http_proxy;
@@ -135,6 +134,7 @@ typedef struct HTTPContext
     int64_t expires;
     char *new_location;
     AVDictionary *redirect_cache;
+    uint64_t filesize_from_content_range;
 } HTTPContext;
 
 #define OFFSET(x) offsetof(HTTPContext, x)
@@ -351,10 +351,7 @@ static int redirect_cache_set(HTTPContext *s, const char *source, const char *de
 
     ret = av_dict_set(&s->redirect_cache, source, value, AV_DICT_MATCH_CASE | AV_DICT_DONT_STRDUP_VAL);
     if (ret < 0)
-    {
-        av_free(value);
         return ret;
-    }
 
     return 0;
 }
@@ -905,7 +902,7 @@ static void parse_content_range(URLContext *h, const char *p)
         p += 6;
         s->off = strtoull(p, NULL, 10);
         if ((slash = strchr(p, '/')) && strlen(slash) > 0)
-            s->filesize = strtoull(slash + 1, NULL, 10);
+            s->filesize_from_content_range = strtoull(slash + 1, NULL, 10);
     }
     if (s->seekable == -1 && (!s->is_akamai || s->filesize != 2147483647))
         h->is_streamed = 0; /* we _can_ in fact seek */
@@ -1495,6 +1492,7 @@ static int http_read_header(URLContext *h)
     av_freep(&s->new_location);
     s->expires = 0;
     s->chunksize = UINT64_MAX;
+    s->filesize_from_content_range = UINT64_MAX;
 
     for (;;)
     {
@@ -1510,6 +1508,10 @@ static int http_read_header(URLContext *h)
             break;
         s->line_count++;
     }
+
+    // filesize from Content-Range can always be used, even if using chunked Transfer-Encoding
+    if (s->filesize_from_content_range != UINT64_MAX)
+        s->filesize = s->filesize_from_content_range;
 
     if (s->seekable == -1 && s->is_mediagateway && s->filesize == 2000000000)
         h->is_streamed = 1; /* we can in fact _not_ seek */
@@ -1631,12 +1633,11 @@ static int http_connect(URLContext *h, const char *path, const char *local_path,
     }
     if (!has_header(s->headers, "\r\nAccept: "))
         av_bprintf(&request, "Accept: */*\r\n");
-    // Note: we send this on purpose even when s->off is 0 when we're probing,
+    // Note: we send the Range header on purpose, even when we're probing,
     // since it allows us to detect more reliably if a (non-conforming)
     // server supports seeking by analysing the reply headers.
-    if (!has_header(s->headers, "\r\nRange: ") && !post && (s->off > 0 || s->end_off || s->seekable == -1))
-    {
-        av_bprintf(&request, "Range: bytes=%" PRIu64 "-", s->off);
+    if (!has_header(s->headers, "\r\nRange: ") && !post && (s->off > 0 || s->end_off || s->seekable != 0)) {
+        av_bprintf(&request, "Range: bytes=%"PRIu64"-", s->off);
         if (s->end_off)
             av_bprintf(&request, "%" PRId64, s->end_off - 1);
         av_bprintf(&request, "\r\n");
@@ -2136,9 +2137,8 @@ static int64_t http_seek_internal(URLContext *h, int64_t off, int whence, int fo
             return s->off;
     }
 
-    /* if redirect caching is disabled, revert to the original uri */
-    if (!s->cache_redirect && strcmp(s->uri, s->location))
-    {
+    /* if the location changed (redirect), revert to the original uri */
+    if (strcmp(s->uri, s->location)) {
         char *new_uri;
         new_uri = av_strdup(s->uri);
         if (!new_uri)
